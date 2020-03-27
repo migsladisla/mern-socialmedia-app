@@ -6,6 +6,10 @@ const keys = require('../../config/keys');
 const passport = require('passport');
 const router = express.Router();
 
+// Load input validation
+const validateRegisterInput = require('../../validations/register');
+const validateLoginInput = require('../../validations/login');
+
 // User model
 const User = require('../../models/User');
 
@@ -13,10 +17,17 @@ const User = require('../../models/User');
 // @desc    Register user
 // @access  Public
 router.post('/register', (req, res) => {
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email: req.body.email })
     .then(user => {
       if(user) {
-        return res.status(400).json({ email: "Email already exists." });
+        errors.email = 'Email already exists'
+        return res.status(400).json(errors);
       } else {
         const avatar = gravatar.url(req.body.email, {
           s: '200', // size 
@@ -48,6 +59,12 @@ router.post('/register', (req, res) => {
 // @desc    Login user / Return JWT
 // @access  Public
 router.post('/login', (req, res) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -56,7 +73,8 @@ router.post('/login', (req, res) => {
     .then(user => {
       // Check for user
       if(!user) {
-        return res.status(404).json({ email: "User not found." });
+        errors.email = 'User not found'
+        return res.status(404).json(errors);
       }
 
       // Check password
@@ -70,14 +88,19 @@ router.post('/login', (req, res) => {
             }
 
             // Sign token
-            jwt.sign(payload, keys.secretKey, { expiresIn: 3600 }, (err, token) => {
-              res.status(200).json({
-                msg: "Login success.",
-                token: `Bearer ${token}`
-              });
+            jwt.sign(
+              payload, 
+              keys.secretKey, 
+              { expiresIn: 3600 }, 
+              (err, token) => {
+                res.json({
+                  success: true,
+                  token: `Bearer ${token}`
+                });
             });
           } else {
-            return res.status(400).json({ password: "Incorrect password." })
+            errors.password = 'Incorrect password'
+            return res.status(400).json(errors)
           }
         })
     });
