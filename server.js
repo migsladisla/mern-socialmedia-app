@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
-const users = require('./routes/api/users');
-const posts = require('./routes/api/posts');
-const profile = require('./routes/api/profile');
+const users = require('./app/routes/api/users');
+const posts = require('./app/routes/api/posts');
+const profile = require('./app/routes/api/profile');
 
 const app = express();
 
@@ -33,6 +33,6 @@ app.use('/api/users', users);
 app.use('/api/posts', posts);
 app.use('/api/profile', profile);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8082;
 
 app.listen(port, () => console.log(`Listening on port ${port}..`));

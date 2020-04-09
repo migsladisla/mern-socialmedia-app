@@ -4,16 +4,11 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 // Load validation
-const validateProfileInput = require('../../validations/profile');
+const validateProfileInput = require('../../../validations/profile');
 
 // Load Profile and User Model
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
-
-// @route   GET api/profile/test
-// @desc    Tests profile route
-// @access  Public
-router.get('/test', (req, res) => res.json({ msg: "Profile works" }));
 
 // @route   GET api/profile
 // @desc    Current user profile
@@ -36,9 +31,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // @route   POST api/profile
 // @desc    Create or Edit user profile
 // @access  Private
-router.post('/', passport.authenticate('jwt', 
-{ session: false }), 
-(req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
 
   // Check validation
