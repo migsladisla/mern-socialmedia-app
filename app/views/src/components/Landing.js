@@ -1,19 +1,20 @@
-import React from 'react'
+import React, { Component } from 'react';
+import { withStyles } from "@material-ui/core/styles";
 import { 
   CssBaseline,
   Box, 
   Grid, 
-  Paper, 
+  Paper,
   Avatar,
   Button,
   Link,
   Typography,
   TextField,
   Checkbox,
-  FormControlLabel,
-  makeStyles }
+  FormControlLabel }
 from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
+import axios from 'axios';
 
 const Copyright = () => {
   return (
@@ -28,7 +29,7 @@ const Copyright = () => {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = theme => ({
   root: {
     height: '100vh'
   },
@@ -62,11 +63,45 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2)
   }
-}));
+});
 
-function Landing() {
-    const classes = useStyles();
+class Landing extends Component {
+  constructor() {
+    super();
+    this.state = {
+      email: '',
+      password: '',
+      errors: {}
+    }
 
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  onChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+      errors: {}
+    })
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const user = {
+      email: this.state.email,
+      password: this.state.password
+    }
+
+    axios.post('/api/users/login', user)
+      .then(res => console.log(res.data))
+      .catch(err => this.setState({ errors: err.response.data }));
+  }
+
+  render() {
+    const { classes } = this.props;
+    const { errors } = this.state;
+    
     return (
       <div>
         <Grid container component="main" className={classes.root}>
@@ -89,19 +124,24 @@ function Landing() {
                   </Typography>
                 </Grid>
               </Grid>
-              <form className={classes.form} noValidate>
+              <form className={classes.form} onSubmit={this.onSubmit} autoComplete="off" noValidate>
                 <TextField
+                  error={errors.email ? true : false}
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
-                  id="username"
-                  label="Username"
-                  name="username"
-                  autoComplete="username"
+                  id="email"
+                  label="Email"
+                  name="email"
+                  autoComplete="email"
+                  helperText={errors.email}
+                  value={this.state.email}
+                  onChange={this.onChange}
                   autoFocus
                 />
                 <TextField
+                  error={errors.password ? true : false}
                   variant="outlined"
                   margin="normal"
                   required
@@ -111,6 +151,9 @@ function Landing() {
                   name="password"
                   type="password"
                   autoComplete="current-password"
+                  helperText={errors.password}
+                  value={this.state.password}
+                  onChange={this.onChange}
                   autoFocus
                 />
                 <FormControlLabel
@@ -119,6 +162,7 @@ function Landing() {
                 />
                 <Button
                   fullWidth
+                  type="submit"
                   variant="contained"
                   color="primary"
                   size="large"
@@ -147,6 +191,7 @@ function Landing() {
         </Grid>
       </div>
     )
+  }
 }
 
-export default Landing;
+export default withStyles(useStyles)(Landing);
