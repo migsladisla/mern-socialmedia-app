@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Material UI
 import { 
@@ -15,14 +15,14 @@ from '@material-ui/core';
 import FaceOutlined from '@material-ui/icons/FaceOutlined';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
 import Copyright from '../../common/components/Copyright';
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Redux
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { registerUser } from '../../store/actions/authAction';
 
-const useStyles = theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: '100vh'
   },
@@ -64,170 +64,169 @@ const useStyles = theme => ({
   signIn: {
     marginTop: theme.spacing(1),
   }
-});
+}));
 
-class Register extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: '',
-      email: '',
-      password: '',
-      password2: '',
-      errors: {}
+function Register(props) {
+  const styles = useStyles();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if(props.auth.isAuthenticated) {
+      props.history.push('/home');
     }
 
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  componentDidMount() {
-    if(this.props.auth.isAuthenticated) {
-      this.props.history.push('/dashboard');
+    if(props.errors) {
+      setErrors(props.errors);
     }
+  }, [props])
+
+  const handleNameChange = e => {
+    setName(e.target.value);
+    setErrors({});
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
-    }
+  const handleEmailChange = e => {
+    setEmail(e.target.value);
+    setErrors({});
   }
 
-  onChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value,
-      errors: {}
-    });
+  const handlePasswordChange = e => {
+    setPassword(e.target.value);
+    setErrors({});
   }
 
-  onSubmit(e) {
-    e.preventDefault(); 
+  const handlePassword2Change = e => {
+    setPassword2(e.target.value);
+    setErrors({});
+  }
+
+  const handleRegister = e => {
+    e.preventDefault();
 
     const newUser = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2
+      name,
+      email,
+      password,
+      password2
     }
 
-    this.props.registerUser(newUser, this.props.history);
+    props.registerUser(newUser, props.history);
   }
 
-  render() {
-    const { classes } = this.props;
-    const { errors } = this.state;
-
-    return (
-      <div>
-        <Grid container component="main" className={classes.root}>
-          <CssBaseline />
-          <Grid item xs={12} sm={12} md={6} lg={5} component={Paper} elevation={6} className={classes.paperBackground} square>
-            <div className={classes.paper}>
-              <Typography component="h1" variant="h3" className={classes.header}>
-                Join the community today! <SentimentVerySatisfiedIcon className={classes.emoji} />
-              </Typography>
-              <Avatar className={classes.avatar}>
-                <FaceOutlined />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Register
-              </Typography>
-              <form className={classes.form} onSubmit={this.onSubmit} autoComplete="off" noValidate>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="name"
-                      label="Name"
-                      name="name"
-                      autoComplete="name"
-                      onChange={this.onChange}
-                      helperText={errors.name}
-                      error={errors.name ? true : false}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="email"
-                      label="Email Address"
-                      name="email"
-                      autoComplete="email"
-                      onChange={this.onChange}
-                      helperText={errors.email}
-                      error={errors.email ? true : false}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      name="password"
-                      label="Password"
-                      type="password"
-                      id="password"
-                      autoComplete="password"
-                      onChange={this.onChange}
-                      helperText={errors.password}
-                      error={errors.password ? true : false}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      name="password2"
-                      label="Confirm Password"
-                      type="password"
-                      id="password2"
-                      autoComplete="password2"
-                      onChange={this.onChange}
-                      helperText={errors.password2}
-                      error={errors.password2 ? true : false}
-                    />
-                  </Grid>
+  return (
+    <div>
+      <Grid container component="main" className={styles.root}>
+        <CssBaseline />
+        <Grid item xs={12} sm={12} md={6} lg={5} component={Paper} elevation={6} className={styles.paperBackground} square>
+          <div className={styles.paper}>
+            <Typography component="h1" variant="h3" className={styles.header}>
+              Join the community today! <SentimentVerySatisfiedIcon className={styles.emoji} />
+            </Typography>
+            <Avatar className={styles.avatar}>
+              <FaceOutlined />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Register
+            </Typography>
+            <form className={styles.form} onSubmit={handleRegister} autoComplete="off" noValidate>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Name"
+                    name="name"
+                    autoComplete="name"
+                    onChange={handleNameChange}
+                    helperText={errors.name}
+                    error={errors.name ? true : false}
+                  />
                 </Grid>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  className={classes.submit}
-                >
-                  Sign Up
-                </Button>
-                <Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2">
-                      By signing up, you agree to the Terms of Service and Privacy Policy, including Cookie Use. Others will be able to find you by searching your email address.
-                    </Typography>
-                  </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={handleEmailChange}
+                    helperText={errors.email}
+                    error={errors.email ? true : false}
+                  />
                 </Grid>
-                <Grid>
-                  <Grid className={classes.signIn}>
-                    <Link href="/" variant="body2">
-                      Already have an account? Sign in
-                    </Link>
-                  </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="password"
+                    onChange={handlePasswordChange}
+                    helperText={errors.password}
+                    error={errors.password ? true : false}
+                  />
                 </Grid>
-                <Box mt={5}>
-                  <Copyright />
-                </Box>
-              </form>
-            </div>
-          </Grid>
-          <Grid item xs={false} sm={false} md={6} lg={7} className={classes.image} />
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password2"
+                    label="Confirm Password"
+                    type="password"
+                    id="password2"
+                    autoComplete="password2"
+                    onChange={handlePassword2Change}
+                    helperText={errors.password2}
+                    error={errors.password2 ? true : false}
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="large"
+                className={styles.submit}
+              >
+                Sign Up
+              </Button>
+              <Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2">
+                    By signing up, you agree to the Terms of Service and Privacy Policy, including Cookie Use. Others will be able to find you by searching your email address.
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid>
+                <Grid className={styles.signIn}>
+                  <Link href="/" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Grid>
+              </Grid>
+              <Box mt={5}>
+                <Copyright />
+              </Box>
+            </form>
+          </div>
         </Grid>
-      </div>
-    )
-  }
+        <Grid item xs={false} sm={false} md={6} lg={7} className={styles.image} />
+      </Grid>
+    </div>
+  )
 }
 
 Register.propTypes = {
@@ -241,4 +240,4 @@ const mapStateToProps = (state) => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { registerUser })(withStyles(useStyles)(Register));
+export default connect(mapStateToProps, { registerUser })(Register);
