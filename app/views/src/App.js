@@ -9,8 +9,7 @@ import store from './store/store';
 
 import Landing from './components/auth/Login';
 import Register from './components/auth/Register';
-import Navbar from './common/components/Navbar';
-import Home from './components/home/Dashboard';
+import Layout from './components/layout/Layout';
 
 import './App.css';
 
@@ -28,8 +27,7 @@ class App extends Component {
           <div className="App">
             <Route exact path="/" component={ Landing } />
             <Route exact path="/register" component={ Register } />
-            <Navbar />
-              <Route exact path="/dashboard" component={ Home } />
+            <Route exact path="/home" component={ Layout } />
           </div>
         </Router>
       </Provider>
