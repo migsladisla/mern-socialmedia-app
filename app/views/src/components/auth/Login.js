@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { loginUser } from '../../store/actions/authAction';
-import { withStyles } from "@material-ui/core/styles";
+
+// Material UI
 import { 
   CssBaseline,
   Box, 
@@ -18,6 +16,12 @@ import {
 from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import Copyright from '../../common/components/Copyright';
+import { withStyles } from "@material-ui/core/styles";
+
+// Redux
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { loginUser } from '../../store/actions/authAction';
 
 const UserAssistance = () => {
   return (
@@ -88,7 +92,17 @@ class Landing extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentDidMount() {
+    if(this.props.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
+    if(nextProps.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+
     if(nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }

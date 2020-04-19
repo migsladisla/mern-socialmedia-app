@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { registerUser } from '../../store/actions/authAction';
-import { withStyles } from "@material-ui/core/styles";
+
+// Material UI
 import { 
   CssBaseline,
   Box, 
@@ -17,6 +15,12 @@ from '@material-ui/core';
 import FaceOutlined from '@material-ui/icons/FaceOutlined';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
 import Copyright from '../../common/components/Copyright';
+import { withStyles } from "@material-ui/core/styles";
+
+// Redux
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { registerUser } from '../../store/actions/authAction';
 
 const useStyles = theme => ({
   root: {
@@ -75,6 +79,12 @@ class Register extends Component {
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if(this.props.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
   }
 
   componentWillReceiveProps(nextProps) {
